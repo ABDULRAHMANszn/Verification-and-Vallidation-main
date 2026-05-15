@@ -1,15 +1,11 @@
-from books2 import Book
-from typing import Annotated
+from typing import Annotated, List
 from sqlalchemy.orm import Session
 from starlette import status
-from pydantic import BaseModel,Field
-
-from connection import engine , Base ,seed_meals , SessionLocal ,Meal,User
+from pydantic import BaseModel, Field
+from connection import engine, Base, seed_meals, SessionLocal, Meal, User
 from fastapi import FastAPI, HTTPException, Depends, Path
 from fastapi.middleware.cors import CORSMiddleware
 from connection import Order, OrderItem
-from pydantic import BaseModel
-from typing import List
 
 app = FastAPI()
 
@@ -24,7 +20,8 @@ app.add_middleware(
 Base.metadata.create_all(engine)
 seed_meals()
 
-def get_db ():
+
+def get_db():
     db = SessionLocal()
     try:
         yield db
@@ -34,29 +31,27 @@ def get_db ():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
+
+# ─────────────────────────────────────────────
+#  MEALS
+# ─────────────────────────────────────────────
+
 @app.get("/meals")
 async def get_meals(db: db_dependency):
     return db.query(Meal).all()
 
-# @app.get("/ordersall")
-# async def get_orders(db: db_dependency):
-#     return db.query(Order).all()
-# @app.get("/orderitemssall/{user_id}/{order_id}")
-# async def get_orders(order_id:int,user_id :int,db: db_dependency):
-#     return db.query(OrderItem).filter(Order.user_id == user_id , OrderItem.order_id ==order_id).all()
 
 @app.get("/meals/{id}")
-async def get_meal(db :db_dependency ,  id : int = Path(gt=0)):
+async def get_meal(db: db_dependency, id: int = Path(gt=0)):
     meal = db.query(Meal).filter(Meal.meal_id == id).first()
     if meal is not None:
         return meal
-    else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-
-
-from pydantic import BaseModel
+# ─────────────────────────────────────────────
+#  AUTH
+# ─────────────────────────────────────────────
 
 class RegisterRequest(BaseModel):
     username: str = Field(min_length=4)
@@ -64,9 +59,11 @@ class RegisterRequest(BaseModel):
     phone: str
     address: str
 
+
 class LoginRequest(BaseModel):
     username: str
     password: str
+
 
 @app.post("/auth/register")
 async def register(data: RegisterRequest, db: db_dependency):
@@ -76,8 +73,8 @@ async def register(data: RegisterRequest, db: db_dependency):
 
     user = User(
         username=data.username,
-        email=f"{data.username}@app.com",  # placeholder
-        password=data.password,            # plain text, simple
+        email=f"{data.username}@app.com",
+        password=data.password,  # ⚠️ TODO: hash with bcrypt
         phone=data.phone,
         address=data.address,
     )
@@ -91,11 +88,12 @@ async def register(data: RegisterRequest, db: db_dependency):
         "role": user.role,
     }
 
+
 @app.post("/auth/login")
 async def login(data: LoginRequest, db: db_dependency):
     user = db.query(User).filter(
         User.username == data.username,
-        User.password == data.password   # plain text check
+        User.password == data.password  # ⚠️ TODO: use bcrypt verify
     ).first()
 
     if not user:
@@ -108,27 +106,50 @@ async def login(data: LoginRequest, db: db_dependency):
     }
 
 
-
-
-
-
+# ─────────────────────────────────────────────
+#  ORDERS
+# ─────────────────────────────────────────────
 
 class OrderItemRequest(BaseModel):
     meal_id: int
     quantity: int
-    price: float
+
 
 class CreateOrderRequest(BaseModel):
     user_id: int
     items: List[OrderItemRequest]
     notes: str | None = None
 
+
 @app.post("/orders")
 async def create_order(data: CreateOrderRequest, db: db_dependency):
-    # 1. Calculate total
-    total = sum(item.price * item.quantity for item in data.items)
+    # FIX: price is now fetched from DB, not trusted from frontend
+    total = 0.0
+    resolved_items = []
 
-    # 2. Create the order
+    for item in data.items:
+        meal = db.query(Meal).filter(Meal.meal_id == item.meal_id).first()
+        if not meal:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Meal with id {item.meal_id} not found"
+            )
+        if not meal.is_available:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Meal '{meal.meal_name}' is currently unavailable"
+            )
+        price = float(meal.price)
+        subtotal = price * item.quantity
+        total += subtotal
+        resolved_items.append({
+            "meal_id": item.meal_id,
+            "quantity": item.quantity,
+            "price": price,
+            "subtotal": subtotal,
+        })
+
+    # Create the order
     new_order = Order(
         user_id=data.user_id,
         total_price=total,
@@ -139,14 +160,14 @@ async def create_order(data: CreateOrderRequest, db: db_dependency):
     db.commit()
     db.refresh(new_order)
 
-    # 3. Create order items
-    for item in data.items:
+    # Create order items
+    for item in resolved_items:
         order_item = OrderItem(
             order_id=new_order.order_id,
-            meal_id=item.meal_id,
-            quantity=item.quantity,
-            price=item.price,
-            subtotal=item.price * item.quantity,
+            meal_id=item["meal_id"],
+            quantity=item["quantity"],
+            price=item["price"],
+            subtotal=item["subtotal"],
         )
         db.add(order_item)
 
@@ -158,56 +179,19 @@ async def create_order(data: CreateOrderRequest, db: db_dependency):
         "status": new_order.status,
     }
 
+
 @app.get("/orders/user/{user_id}")
 async def get_user_orders(user_id: int, db: db_dependency):
     orders = db.query(Order).filter(Order.user_id == user_id).all()
     return orders
 
 
-
 @app.get("/orders/user/{user_id}/full")
 async def get_user_orders_full(user_id: int, db: db_dependency):
-    # Get all orders for this user
     orders = db.query(Order).filter(Order.user_id == user_id).all()
 
     result = []
     for order in orders:
-        # For each order, get items joined with meal info
-        items = (
-            db.query(OrderItem, Meal)
-            .join(Meal, OrderItem.meal_id == Meal.meal_id)
-            .filter(OrderItem.order_id == order.order_id)
-            .all()
-        )
-
-        result.append({
-            "id": order.order_id,
-            "date": order.order_date.isoformat() if order.order_date else None,
-            "status": order.status,
-            "items": [
-                {
-                    "title": meal.meal_name,
-                    "price": float(item.price),
-                    "quantity": item.quantity,
-                    "image": meal.image_path,
-                }
-                for item, meal in items
-            ]
-        })
-
-    return result
-
-
-
-
-@app.get("/orders/user/{user_id}/full")
-async def get_user_orders_full(user_id: int, db: db_dependency):
-    # Get all orders for this user
-    orders = db.query(Order).filter(Order.user_id == user_id).all()
-
-    result = []
-    for order in orders:
-        # For each order, get items joined with meal info
         items = (
             db.query(OrderItem, Meal)
             .join(Meal, OrderItem.meal_id == Meal.meal_id)
