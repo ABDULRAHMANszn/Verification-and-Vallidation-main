@@ -1,9 +1,9 @@
-
 'use client';
-console.log("APP/NAVBAR/NAV.TSX KULLANILIYOR");
+
 import { NavLinks } from '@/constant/constant'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { HiBars3BottomRight } from 'react-icons/hi2'
 import ThemeToggler from '@/components/Helper/ThemeToggler';
 import { FaBagShopping } from 'react-icons/fa6';
@@ -16,36 +16,26 @@ type Props = {
 }
 
 const Nav = ({ openNav, openCart }: Props) => {
-
-  const [navBg, setNavBg] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const pathname = usePathname();
   const router = useRouter();
 
-  // ── Read user from localStorage + listen for changes ──
   useEffect(() => {
-    console.log("Nav useEffect running ✅");
-
     const sync = () => {
-      const raw = localStorage.getItem("user");
-      console.log("raw from localStorage:", raw);
       const user = getUser();
       setUsername(user ? user.username : null);
     };
-
-    sync(); // run immediately on mount
-    window.addEventListener("userChanged", sync);
-    return () => window.removeEventListener("userChanged", sync);
+    sync();
+    window.addEventListener('userChanged', sync);
+    return () => window.removeEventListener('userChanged', sync);
   }, []);
 
-  // ── Scroll background handler ──
   useEffect(() => {
-    const handler = () => {
-      if (window.scrollY >= 90) setNavBg(true)
-      else setNavBg(false)
-    }
-    window.addEventListener('scroll', handler)
-    return () => window.removeEventListener('scroll', handler)
-  }, [])
+    const handler = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handler);
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
 
   const handleLogout = () => {
     logoutUser();
@@ -54,70 +44,91 @@ const Nav = ({ openNav, openCart }: Props) => {
   };
 
   return (
-    <div className={`transition-all ${navBg ? `bg-white dark:bg-gray-900 shadow-md` : `fixed`} duration-200 h-[12vh] z-[100] fixed w-full`}>
-      <div className='flex items-center h-full justify-between w-[90%] xl:w-[80%] mx-auto'>
+    <header className={`fixed top-0 left-0 right-0 z-[100] h-[72px] transition-all duration-300
+      bg-white/80 dark:bg-gray-900/85 backdrop-blur-md border-b border-gray-100/80 dark:border-gray-800/80
+      ${scrolled ? 'shadow-md shadow-gray-200/60 dark:shadow-gray-900/60' : 'shadow-sm'}`}>
 
-        {/* CART ICON */}
-        <div className='flex items-center space-x-2'>
-          <div
+      <div className='flex items-center h-full justify-between w-[90%] xl:w-[82%] mx-auto'>
+
+        {/* ── Left: Logo / Cart ── */}
+        <div className='flex items-center gap-3'>
+          <button
             onClick={openCart}
-            className='w-10 h-10 bg-blue-950 dark:bg-white hover:bg-pink-600 transition-all rounded-full flex items-center justify-center cursor-pointer'
+            aria-label='Open cart'
+            className='w-10 h-10 bg-[#0d1b4b] dark:bg-white hover:bg-[#e6007a] dark:hover:bg-[#e6007a] transition-colors duration-200 rounded-full flex items-center justify-center flex-shrink-0'
           >
-            <FaBagShopping className='w-6 h-6 text-white dark:text-black' />
-          </div>
-          <h1 className='text-xl hidden sm:block md:text-2xl text-black dark:text-white font-bold'>
+            <FaBagShopping className='w-5 h-5 text-white dark:text-[#0d1b4b]' />
+          </button>
+          <span className='hidden sm:block text-[#0d1b4b] dark:text-white font-bold text-lg tracking-tight'>
             My Cart
-          </h1>
+          </span>
         </div>
 
-        {/* NAV LINKS */}
-        <div className='hidden lg:flex items-center space-x-10'>
-          {NavLinks.map((link) => (
-            <Link key={link.id} href={link.url}
-              className='text-black dark:text-white hover:text-green-700 dark:hover:text-green-400 font-bold transition-all duration-200'>
-              {link.label}
-            </Link>
-          ))}
-        </div>
+        {/* ── Center: Nav Links ── */}
+        <nav className='hidden lg:flex items-center gap-8'>
+          {NavLinks.map((link) => {
+            const isActive =
+              link.url === '/'
+                ? pathname === '/'
+                : !link.url.startsWith('/#') && pathname.startsWith(link.url);
+            return (
+              <Link
+                key={link.id}
+                href={link.url}
+                className={`relative text-sm font-semibold pb-1 transition-colors duration-200
+                  ${isActive
+                    ? 'text-[#e6007a]'
+                    : 'text-gray-700 dark:text-gray-200 hover:text-[#e6007a] dark:hover:text-[#e6007a]'
+                  }`}
+              >
+                {link.label}
+                {isActive && (
+                  <span className='absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[#e6007a]' />
+                )}
+              </Link>
+            );
+          })}
+        </nav>
 
-        {/* BUTTONS */}
-        <div className='flex items-center space-x-4'>
+        {/* ── Right: Actions ── */}
+        <div className='flex items-center gap-3'>
 
           <ThemeToggler />
 
           {username ? (
-            // ── Logged in: show username + logout ──
-            <div className='hidden lg:flex items-center space-x-3'>
-              <span className='text-black dark:text-white font-semibold'>
+            <div className='hidden lg:flex items-center gap-3'>
+              <span className='text-gray-700 dark:text-gray-200 font-semibold text-sm'>
                 👤 {username}
               </span>
               <button
                 onClick={handleLogout}
-                className='bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition-all'
+                className='bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all duration-200 hover:scale-[1.03]'
               >
                 Logout
               </button>
             </div>
           ) : (
-            // ── Not logged in: show Sign In button ──
             <Link
               href='/login'
-              className='hidden lg:block bg-blue-950 hover:bg-blue-800 text-white text-sm px-6 py-2 rounded-lg font-semibold transition-all'
+              className='hidden lg:inline-flex items-center bg-[#0d1b4b] hover:bg-blue-900 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all duration-200 hover:scale-[1.03] shadow-md shadow-blue-950/20'
             >
               Sign In
             </Link>
           )}
 
-          <HiBars3BottomRight
+          <button
             onClick={openNav}
-            className='w-8 h-8 text-blue-950 cursor-pointer lg:hidden dark:text-white'
-          />
+            aria-label='Open menu'
+            className='lg:hidden p-1'
+          >
+            <HiBars3BottomRight className='w-7 h-7 text-[#0d1b4b] dark:text-white' />
+          </button>
 
         </div>
 
       </div>
-    </div>
-  )
-}
+    </header>
+  );
+};
 
-export default Nav
+export default Nav;

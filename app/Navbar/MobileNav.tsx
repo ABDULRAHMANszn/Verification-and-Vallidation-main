@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { NavLinks } from '@/constant/constant'
 import { CgClose } from 'react-icons/cg'
 import { getUser, logoutUser } from '@/constant/api'
@@ -12,9 +13,9 @@ type Props = {
 }
 
 const MobileNav = ({ closeNav, showNav }: Props) => {
-
   const navOpen = showNav ? 'translate-x-0' : 'translate-x-[-100%]'
   const [username, setUsername] = useState<string | null>(null);
+  const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
@@ -22,10 +23,9 @@ const MobileNav = ({ closeNav, showNav }: Props) => {
       const user = getUser();
       setUsername(user ? user.username : null);
     };
-
     sync();
-    window.addEventListener("userChanged", sync);
-    return () => window.removeEventListener("userChanged", sync);
+    window.addEventListener('userChanged', sync);
+    return () => window.removeEventListener('userChanged', sync);
   }, []);
 
   const handleLogout = () => {
@@ -37,50 +37,67 @@ const MobileNav = ({ closeNav, showNav }: Props) => {
 
   return (
     <div>
-      {/* Overlay */}
-      <div className={`fixed bg-black z-[1002] ${navOpen} opacity-70 transition-all transform duration-500 inset-0 w-full h-screen`} />
+      {/* Backdrop */}
+      <div
+        onClick={closeNav}
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[1002] transition-opacity duration-300
+          ${showNav ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      />
 
-      {/* Nav Links */}
-      <div className={`fixed ${navOpen} text-white flex flex-col transform transition-all delay-300 h-full justify-center duration-500 sm:w-[60%] w-[80%] bg-blue-950 space-y-6 z-[1050]`}>
+      {/* Drawer */}
+      <div className={`fixed top-0 left-0 h-full w-[75%] sm:w-[60%] max-w-[320px] z-[1050]
+        bg-[#0d1b4b] transform transition-transform duration-300 ${navOpen}
+        flex flex-col pt-16 pb-10 px-8 gap-2`}>
 
-        {NavLinks.map((link) => (
-          <Link key={link.id} href={link.url} onClick={closeNav}>
-            <p className='text-white text-[20px] w-fit ml-12 border-b-[1.5px] pb-1 border-white sm:text-[30px]'>
+        {NavLinks.map((link) => {
+          const isActive =
+            link.url === '/'
+              ? pathname === '/'
+              : !link.url.startsWith('/#') && pathname.startsWith(link.url);
+          return (
+            <Link
+              key={link.id}
+              href={link.url}
+              onClick={closeNav}
+              className={`text-lg font-semibold py-3 border-b border-white/10 transition-colors duration-150
+                ${isActive ? 'text-[#e6007a]' : 'text-white hover:text-[#e6007a]'}`}
+            >
               {link.label}
-            </p>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
 
-        {/* ── User section ── */}
-        <div className='ml-12'>
+        <div className='mt-6'>
           {username ? (
-            // Logged in
-            <div className='flex flex-col space-y-3'>
-              <span className='text-white font-semibold text-[18px]'>
+            <div className='flex flex-col gap-3'>
+              <span className='text-white/80 font-medium text-sm'>
                 👤 {username}
               </span>
               <button
                 onClick={handleLogout}
-                className='bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg w-fit transition-all'
+                className='bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl w-fit transition-all'
               >
                 Logout
               </button>
             </div>
           ) : (
-            // Not logged in
-            <Link href='/login' onClick={closeNav}>
-              <p className='text-white text-[20px] w-fit border-b-[1.5px] pb-1 border-white sm:text-[30px]'>
-                Sign In
-              </p>
+            <Link
+              href='/login'
+              onClick={closeNav}
+              className='inline-flex items-center bg-white text-[#0d1b4b] font-semibold text-sm px-6 py-2.5 rounded-xl transition-all hover:bg-gray-100'
+            >
+              Sign In
             </Link>
           )}
         </div>
 
-        {/* Close Icon */}
-        <CgClose
+        <button
           onClick={closeNav}
-          className='absolute top-[0.7rem] right-[1.4rem] sm:w-8 sm:h-8 w-6 h-6'
-        />
+          aria-label='Close menu'
+          className='absolute top-4 right-4 text-white/70 hover:text-white transition-colors'
+        >
+          <CgClose className='w-6 h-6' />
+        </button>
       </div>
     </div>
   )

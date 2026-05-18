@@ -20,7 +20,7 @@ const SignUpForm = () => {
     try {
       const user = await registerUser(username, password, phone, address, email || undefined);
       saveUser(user);       // → saves to localStorage
-      router.push("/");     // → back to login
+      router.push("/");     // → back to home
     } catch (err: unknown) {
       setError((err as Error).message);
     } finally {

@@ -1,10 +1,12 @@
 'use client'
 import React, { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import SignInForm from "./SignInForm";
 import SignUpForm from "./SignUpForm";
 
 const LoginPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const searchParams = useSearchParams();
+  const [isLogin, setIsLogin] = useState(searchParams.get("mode") !== "signup");
 
   return (
     <div className="min-h-screen flex items-center justify-center dark:bg-gray-900  dark:text-gray-300 bg-gray-100">
