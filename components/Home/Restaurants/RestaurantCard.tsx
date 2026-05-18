@@ -82,7 +82,7 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
             <FaMinus />
           </button>
 
-          <span className="font-bold w-6 text-center">{count}</span>
+          <span className="font-bold w-6 text-center" id="quantityOfMeal">{count}</span>
 
           <button
             id={`add-to-cart-${meal_id}`}
