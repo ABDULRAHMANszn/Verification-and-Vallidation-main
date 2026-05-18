@@ -12,6 +12,7 @@ driver.maximize_window()
 driver.get("http://localhost:3000/")
 
 
+
 sign_up_btn = driver.find_element(By.XPATH, '//a[contains(text(),"Sign Up")]')
 driver.execute_script("arguments[0].click();", sign_up_btn)
 driver.find_element(By.ID, "username").send_keys("sami2")
