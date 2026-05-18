@@ -1,6 +1,8 @@
-import React from 'react'
+'use client'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getUser } from '@/constant/api'
 
 const stats = [
   { value: '500+', label: 'Restaurants' },
@@ -9,6 +11,20 @@ const stats = [
 ]
 
 const Hero = () => {
+  const [username, setUsername] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const sync = () => {
+      const user = getUser()
+      setUsername(user ? user.username : null)
+    }
+    sync()
+    setMounted(true)
+    window.addEventListener('userChanged', sync)
+    return () => window.removeEventListener('userChanged', sync)
+  }, [])
+
   return (
     <section className='relative w-full min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/40 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950'>
 
@@ -40,21 +56,41 @@ const Hero = () => {
             Order meals, groceries, and drinks from the best restaurants near you.
           </p>
 
-          {/* Buttons */}
-          <div className='flex flex-wrap items-center gap-4 mb-12'>
-            <Link
-              href='/login'
-              className='bg-[#0d1b4b] hover:bg-blue-900 text-white font-semibold px-9 py-3.5 rounded-xl transition-all duration-200 hover:scale-[1.04] shadow-lg shadow-blue-950/20'
-            >
-              Sign In
-            </Link>
-            <Link
-              href='/login?mode=signup'
-              className='border-2 border-[#0d1b4b] dark:border-white text-[#0d1b4b] dark:text-white font-semibold px-9 py-3.5 rounded-xl transition-all duration-200 hover:bg-[#0d1b4b] hover:text-white dark:hover:bg-white dark:hover:text-gray-900'
-            >
-              Sign Up
-            </Link>
-          </div>
+          {/* Buttons — only render after mount to avoid hydration flash */}
+          {mounted && (
+            <div className='flex flex-wrap items-center gap-4 mb-12'>
+              {username ? (
+                // Logged in: greet the user and link to meals
+                <>
+                  <span className='text-gray-700 dark:text-gray-200 font-semibold text-lg'>
+                    Welcome back, <span className='text-[#e6007a]'>{username}</span> 👋
+                  </span>
+                  <Link
+                    href='/#restaurants'
+                    className='bg-[#0d1b4b] hover:bg-blue-900 text-white font-semibold px-9 py-3.5 rounded-xl transition-all duration-200 hover:scale-[1.04] shadow-lg shadow-blue-950/20'
+                  >
+                    Order Now
+                  </Link>
+                </>
+              ) : (
+                // Not logged in: show Sign In + Sign Up
+                <>
+                  <Link
+                    href='/login'
+                    className='bg-[#0d1b4b] hover:bg-blue-900 text-white font-semibold px-9 py-3.5 rounded-xl transition-all duration-200 hover:scale-[1.04] shadow-lg shadow-blue-950/20'
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href='/login?mode=signup'
+                    className='border-2 border-[#0d1b4b] dark:border-white text-[#0d1b4b] dark:text-white font-semibold px-9 py-3.5 rounded-xl transition-all duration-200 hover:bg-[#0d1b4b] hover:text-white dark:hover:bg-white dark:hover:text-gray-900'
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Stats */}
           <div className='flex items-center gap-10'>
@@ -73,9 +109,8 @@ const Hero = () => {
 
         {/* ── Right: Food Image ── */}
         <div data-aos="fade-left" data-aos-delay="150" className='relative mx-auto hidden xl:flex items-center justify-center'>
-          {/* Soft glow behind image */}
           <div className='absolute w-[440px] h-[440px] rounded-full bg-gradient-to-br from-orange-200/60 to-pink-200/60 dark:from-orange-900/20 dark:to-pink-900/20 blur-2xl' />
-          <div className='relative animate-float drop-shadow-2xl'>
+          <div className='relative animate-float'>
             <Image
               src='/images/heroD.png'
               alt='Delicious food'
