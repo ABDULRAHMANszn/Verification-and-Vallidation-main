@@ -9,7 +9,7 @@ import CartBar from './Cart/CartBar'
 import CartModal from './Cart/CartModal'
 import ResponsiveNav from '@/app/Navbar/ResponsiveNav'
 import AOS from 'aos';
-// import 'aos/dist/aos.css';
+import 'aos/dist/aos.css';
 import { getMeals, Meal } from '@/constant/api'
 
 type CartItem = {
@@ -25,12 +25,13 @@ const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mealsError, setMealsError] = useState("");
 
   // ── Fetch meals from FastAPI on mount ──
   useEffect(() => {
     getMeals()
       .then(setMeals)
-      .catch((err) => console.error('Failed to fetch meals:', err))
+      .catch(() => setMealsError("Could not load meals. Make sure the server is running."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -71,9 +72,8 @@ const Home = () => {
   });
 };
 
-  const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
+  const total = parseFloat(
+    cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)
   );
 
   return (
@@ -82,12 +82,16 @@ const Home = () => {
       <ResponsiveNav openCart={() => setShowModal(true)} />
       <Hero />
 
-      {/* ── Meals section: show loader or grid ── */}
+      {/* ── Meals section: show loader, error, or grid ── */}
       {loading ? (
         <div className='flex justify-center items-center py-24'>
           <p className='text-xl font-semibold text-gray-500 animate-pulse'>
             Loading meals...
           </p>
+        </div>
+      ) : mealsError ? (
+        <div className='flex justify-center items-center py-24'>
+          <p className='text-lg font-semibold text-red-500'>{mealsError}</p>
         </div>
       ) : (
         <Restaurants

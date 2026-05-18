@@ -53,7 +53,6 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
       const items = cart.map(item => ({
         meal_id: item.meal_id,
         quantity: item.quantity,
-        price: item.price,
       }));
 
       const result = await createOrder(user.user_id, items);
@@ -121,7 +120,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
                 </div>
               </div>
               <p className="text-black dark:text-white font-medium">
-                ${item.price * item.quantity}
+                ₺{(item.price * item.quantity).toFixed(2)}
               </p>
             </div>
           ))}
@@ -130,7 +129,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
         <hr className="my-4" />
 
         <p className="font-bold text-lg text-black dark:text-white">
-          Total: <span className="text-green-600">${total}</span>
+          Total: <span className="text-green-600">₺{total}</span>
         </p>
 
         <div className="mt-4 flex items-center gap-2 text-green-600 font-medium">

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 const SignUpForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail]       = useState("");
   const [phone, setPhone]       = useState("");
   const [address, setAddress]   = useState("");
   const [error, setError]       = useState("");
@@ -17,7 +18,7 @@ const SignUpForm = () => {
     setError("");
     setLoading(true);
     try {
-      const user = await registerUser(username, password, phone, address);
+      const user = await registerUser(username, password, phone, address, email || undefined);
       saveUser(user);       // → saves to localStorage
       router.push("/");     // → back to login
     } catch (err: unknown) {
@@ -40,7 +41,10 @@ const SignUpForm = () => {
       <input type="password" placeholder="Password"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
         value={password} onChange={(e) => setPassword(e.target.value)} required />
-      <input type="tel" placeholder="Phone Number"
+      <input type="email" placeholder="Email (optional)"
+        className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
+        value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="tel" placeholder="Phone Number (digits only, e.g. 0501234567)"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
         value={phone} onChange={(e) => setPhone(e.target.value)} required />
       <textarea placeholder="Address"

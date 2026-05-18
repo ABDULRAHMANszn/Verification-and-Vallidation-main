@@ -85,7 +85,7 @@ const OrdersPage = () => {
             {/* ── Grand total ── */}
             <div className="mt-8 bg-blue-950 text-white rounded-2xl p-5 flex items-center justify-between">
               <p className="text-base sm:text-lg font-medium">All Orders Total</p>
-              <p className="text-xl sm:text-2xl font-bold">${allOrdersTotal}</p>
+              <p className="text-xl sm:text-2xl font-bold">₺{allOrdersTotal}</p>
             </div>
           </>
         )}

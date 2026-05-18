@@ -4,10 +4,10 @@ import Nav from './Nav'
 import MobileNav from './MobileNav'
 
 type Props = {
-  openCart: () => void;
+  openCart?: () => void;
 };
 
-const ResponsiveNav = ({ openCart }: Props) => {
+const ResponsiveNav = ({ openCart = () => {} }: Props) => {
 
   const [showNav, setShowNav] = useState(false);
 

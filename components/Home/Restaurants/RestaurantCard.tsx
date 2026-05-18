@@ -16,6 +16,7 @@ type Props = {
   image: string;
   title: string;
   price: number;
+  category: string;
   updateCart: (
     meal_id: number,
     title: string,
@@ -26,7 +27,7 @@ type Props = {
   cart: CartItem[];
 };
 
-const RestaurantCard = ({ meal_id, image, title, price, updateCart, cart }: Props) => {
+const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, cart }: Props) => {
 
   // ✅ Find this meal in the cart by meal_id
   const itemInCart = cart.find(item => item.meal_id === meal_id);
@@ -43,7 +44,7 @@ const RestaurantCard = ({ meal_id, image, title, price, updateCart, cart }: Prop
     updateCart(meal_id, title, price, newQuantity, image);
   };
 
-  const totalPrice = count * price;
+  const totalPrice = parseFloat((count * price).toFixed(2));
 
   return (
     <div>
@@ -51,7 +52,7 @@ const RestaurantCard = ({ meal_id, image, title, price, updateCart, cart }: Prop
         src={image}
         width={400}
         height={400}
-        alt="image"
+        alt={title}
         className="w-full h-[250px] object-cover"
       />
 
@@ -60,15 +61,14 @@ const RestaurantCard = ({ meal_id, image, title, price, updateCart, cart }: Prop
           {title}
         </h1>
         <p className="font-bold mt-4 text-orange-600 text-base sm:text-lg">
-          {price}$
+          ₺{price}
         </p>
       </div>
 
       <div className="flex items-center mt-3 justify-between">
 
         <div className="flex space-x-2">
-          <p className="bg-blue-950 px-3 py-1.5 rounded-full text-white">Chicken</p>
-          <p className="bg-blue-950 px-3 py-1.5 rounded-full text-white">Vegetables</p>
+          <p className="bg-blue-950 px-3 py-1.5 rounded-full text-white">{category}</p>
         </div>
 
         {/* CONTROLS */}
@@ -94,7 +94,7 @@ const RestaurantCard = ({ meal_id, image, title, price, updateCart, cart }: Prop
 
       {count > 0 && (
         <p className="mt-2 font-semibold text-green-700">
-          Subtotal: ${totalPrice}
+          Subtotal: ₺{totalPrice}
         </p>
       )}
     </div>

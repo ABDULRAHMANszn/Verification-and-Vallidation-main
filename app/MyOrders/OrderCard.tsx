@@ -28,7 +28,7 @@ const OrderCard = ({ order }: Props) => {
 
         <div className="text-right">
           <p className="text-sm text-gray-500 dark:text-gray-400">Total</p>
-          <p className="text-lg font-bold text-green-600">${orderTotal}</p>
+          <p className="text-lg font-bold text-green-600">₺{orderTotal}</p>
         </div>
       </div>
 
@@ -52,13 +52,13 @@ const OrderCard = ({ order }: Props) => {
                   {item.title}
                 </h3>
                 <p className="text-sm text-orange-500">
-                  ${item.price} × {item.quantity}
+                  ₺{item.price} × {item.quantity}
                 </p>
               </div>
             </div>
 
             <p className="font-bold text-black dark:text-white">
-              ${item.price * item.quantity}
+              ₺{item.price * item.quantity}
             </p>
           </div>
         ))}

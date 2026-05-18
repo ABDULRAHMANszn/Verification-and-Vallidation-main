@@ -38,6 +38,7 @@ const Restaurants = ({ id, updateCart, cart, meals }: Props) => {
             image={meal.image_path}
             title={meal.meal_name}
             price={Number(meal.price)}
+            category={meal.category}
             updateCart={updateCart}
             cart={cart}
           />
