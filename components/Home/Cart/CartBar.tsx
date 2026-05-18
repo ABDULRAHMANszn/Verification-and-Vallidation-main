@@ -13,6 +13,7 @@ const CartBar = ({ total, onConfirm }: Props) => {
       <p className="font-bold text-lg">Total: ₺{total}</p>
 
       <button
+        id="cart-btn"
         onClick={onConfirm}
         className={`bg-green-600 text-white px-8 py-3 hover:bg-green-600/90  transition-all rounded-full font-semibold ${showButton ? 'inline-block': 'hidden'}`}
       >

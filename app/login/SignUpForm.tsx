@@ -29,28 +29,28 @@ const SignUpForm = () => {
   };
 
   return (
-    <form onSubmit={handleRegister} className="space-y-4">
+    <form id="register-form" onSubmit={handleRegister} className="space-y-4">
       {error && (
-        <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">
+        <p id="register-error" className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">
           {error}
         </p>
       )}
-      <input type="text" placeholder="Username"
+      <input id="username" type="text" placeholder="Username"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
         value={username} onChange={(e) => setUsername(e.target.value)} required />
-      <input type="password" placeholder="Password"
+      <input id="password" type="password" placeholder="Password"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
         value={password} onChange={(e) => setPassword(e.target.value)} required />
-      <input type="email" placeholder="Email (optional)"
+      <input id="email" type="email" placeholder="Email (optional)"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
         value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="tel" placeholder="Phone Number (digits only, e.g. 0501234567)"
+      <input id="phone" type="tel" placeholder="Phone Number (digits only, e.g. 0501234567)"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
         value={phone} onChange={(e) => setPhone(e.target.value)} required />
-      <textarea placeholder="Address"
+      <textarea id="address" placeholder="Address"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950 resize-none"
         value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required />
-      <button type="submit" disabled={loading}
+      <button id="register-btn" type="submit" disabled={loading}
         className="w-full bg-blue-950 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition disabled:opacity-50">
         {loading ? "Creating account..." : "Sign Up"}
       </button>

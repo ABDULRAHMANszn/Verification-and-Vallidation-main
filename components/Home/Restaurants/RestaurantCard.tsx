@@ -75,6 +75,7 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
         <div className="flex items-center gap-2 mr-2">
 
           <button
+            id={`remove-from-cart-${meal_id}`}
             onClick={handleRemove}
             className="bg-red-600 p-2 rounded-full text-white"
           >
@@ -84,6 +85,7 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
           <span className="font-bold w-6 text-center">{count}</span>
 
           <button
+            id={`add-to-cart-${meal_id}`}
             onClick={handleAdd}
             className="bg-green-600 p-2 rounded-full text-white"
           >

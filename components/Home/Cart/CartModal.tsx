@@ -69,10 +69,11 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+    <div id="cart-modal" className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
       <div className="bg-white dark:bg-gray-900 rounded-xl p-6 w-[90%] max-w-md relative">
 
         <CgClose
+          id="close-cart-btn"
           onClick={onClose}
           className="absolute top-4 right-4 w-6 h-6 cursor-pointer text-black dark:text-white"
         />
@@ -82,7 +83,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
         </h2>
 
         {error && (
-          <p className="text-red-500 text-sm bg-red-50 p-2 rounded-lg mb-3">
+          <p id="cart-error" className="text-red-500 text-sm bg-red-50 p-2 rounded-lg mb-3">
             {error}
           </p>
         )}
@@ -100,6 +101,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
                   <p className="text-black dark:text-white font-medium">{item.title}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <button
+                      id={`decrease-${item.meal_id}`}
                       onClick={() =>
                         updateCart(item.meal_id, item.title, item.price, item.quantity - 1, item.image)
                       }
@@ -109,6 +111,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
                     </button>
                     <span className="text-black dark:text-white font-bold">{item.quantity}</span>
                     <button
+                      id={`increase-${item.meal_id}`}
                       onClick={() =>
                         updateCart(item.meal_id, item.title, item.price, item.quantity + 1, item.image)
                       }
@@ -138,6 +141,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
         </div>
 
         <button
+          id="place-order-btn"
           onClick={handleConfirm}
           disabled={loading || cart.length === 0}
           className="mt-5 w-full bg-blue-950 text-white py-2 rounded-lg hover:bg-black transition disabled:opacity-50"

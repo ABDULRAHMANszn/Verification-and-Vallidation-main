@@ -24,6 +24,7 @@ const LoginPage = () => {
         <p className="text-center mt-5 text-sm">
           {isLogin ? "Don't have an account?" : "Already have an account?"}
           <button
+            id="toggle-login-btn"
             onClick={() => setIsLogin(!isLogin)}
             className="ml-2 text-blue-950 font-semibold hover:underline dark:text-gray-300"
           >

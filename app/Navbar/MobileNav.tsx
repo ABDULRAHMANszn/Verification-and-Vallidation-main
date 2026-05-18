@@ -59,6 +59,7 @@ const MobileNav = ({ closeNav, showNav }: Props) => {
               key={link.id}
               href={link.url}
               onClick={closeNav}
+              id={link.url === '/MyOrders' ? 'mobile-my-orders-link' : undefined}
               className={`text-lg font-semibold py-3 border-b border-white/10 transition-colors duration-150
                 ${isActive ? 'text-[#e6007a]' : 'text-white hover:text-[#e6007a]'}`}
             >
@@ -74,6 +75,7 @@ const MobileNav = ({ closeNav, showNav }: Props) => {
                 👤 {username}
               </span>
               <button
+                id="mobile-logout-btn"
                 onClick={handleLogout}
                 className='bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl w-fit transition-all'
               >
@@ -82,6 +84,7 @@ const MobileNav = ({ closeNav, showNav }: Props) => {
             </div>
           ) : (
             <Link
+              id="mobile-login-btn"
               href='/login'
               onClick={closeNav}
               className='inline-flex items-center bg-white text-[#0d1b4b] font-semibold text-sm px-6 py-2.5 rounded-xl transition-all hover:bg-gray-100'
@@ -92,6 +95,7 @@ const MobileNav = ({ closeNav, showNav }: Props) => {
         </div>
 
         <button
+          id="close-menu-btn"
           onClick={closeNav}
           aria-label='Close menu'
           className='absolute top-4 right-4 text-white/70 hover:text-white transition-colors'

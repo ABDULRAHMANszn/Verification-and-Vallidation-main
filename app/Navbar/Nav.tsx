@@ -53,6 +53,7 @@ const Nav = ({ openNav, openCart }: Props) => {
         {/* ── Left: Logo / Cart ── */}
         <div className='flex items-center gap-3'>
           <button
+            id="nav-cart-btn"
             onClick={openCart}
             aria-label='Open cart'
             className='w-10 h-10 bg-[#0d1b4b] dark:bg-white hover:bg-[#e6007a] dark:hover:bg-[#e6007a] transition-colors duration-200 rounded-full flex items-center justify-center flex-shrink-0'
@@ -75,6 +76,7 @@ const Nav = ({ openNav, openCart }: Props) => {
               <Link
                 key={link.id}
                 href={link.url}
+                id={link.url === '/MyOrders' ? 'my-orders-link' : undefined}
                 className={`relative text-sm font-semibold pb-1 transition-colors duration-200
                   ${isActive
                     ? 'text-[#e6007a]'
@@ -101,6 +103,7 @@ const Nav = ({ openNav, openCart }: Props) => {
                 👤 {username}
               </span>
               <button
+                id="logout-btn"
                 onClick={handleLogout}
                 className='bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-5 py-2 rounded-xl transition-all duration-200 hover:scale-[1.03]'
               >
@@ -109,6 +112,7 @@ const Nav = ({ openNav, openCart }: Props) => {
             </div>
           ) : (
             <Link
+              id="login-btn"
               href='/login'
               className='hidden lg:inline-flex items-center bg-[#0d1b4b] hover:bg-blue-900 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all duration-200 hover:scale-[1.03] shadow-md shadow-blue-950/20'
             >
@@ -117,6 +121,7 @@ const Nav = ({ openNav, openCart }: Props) => {
           )}
 
           <button
+            id="open-menu-btn"
             onClick={openNav}
             aria-label='Open menu'
             className='lg:hidden p-1'

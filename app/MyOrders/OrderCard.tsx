@@ -15,7 +15,7 @@ const OrderCard = ({ order }: Props) => {
   );
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 p-5">
+    <div id={`order-card-${order.id}`} className="bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 p-5">
       <div className="flex items-center justify-between gap-4 mb-4">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-black dark:text-white">
