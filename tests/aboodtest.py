@@ -25,6 +25,37 @@ driver.get("http://localhost:3000/")
 # print("TC-FUNC-002 PASSED - Duplicate username rejected")
 # driver.execute_script("window.localStorage.clear();")
 
+# #Registration without Optional Email
+# driver.get("http://localhost:3000/login?mode=signup")
+# driver.find_element(By.ID, "username").send_keys("sami4")
+# driver.find_element(By.ID, "password").send_keys("123456")
+# driver.find_element(By.ID, "email").send_keys("")
+# driver.find_element(By.ID, "phone").send_keys("1234567890")
+# driver.find_element(By.ID, "address").send_keys("123 Main St")
+# driver.find_element(By.ID, "register-btn").click()
+# assert "/signup" not in driver.current_url
+# print("TC-FUNC-001 PASSED - Registration without optional email accepted")
+# driver.execute_script("window.localStorage.clear();")
+
+# #Registration with Empty Password
+# driver.get("http://localhost:3000/login?mode=signup")
+# driver.find_element(By.ID, "username").send_keys("sami5")
+# driver.find_element(By.ID, "password").send_keys("")
+# driver.find_element(By.ID, "email").send_keys("")
+# driver.find_element(By.ID, "phone").send_keys("1234567890")
+# driver.find_element(By.ID, "address").send_keys("123 Main St")
+# driver.find_element(By.ID, "register-btn").click()
+# assert "signup" in driver.current_url
+# print("TC-FUNC-000 PASSED - Registration with empty password rejected")
+
+# # Login Link Navigates to Login Page	
+# driver.get("http://localhost:3000/")
+# driver.find_element(By.ID, "login-btn").click()
+# time.sleep(2)
+# assert "/login" in driver.current_url
+# print("TC-FUNC-000 PASSED - Login link navigates to login page")
+
+
 ############################################################################ signin ##########################################################################
 
 # # Login with correct credentials
@@ -88,15 +119,15 @@ driver.get("http://localhost:3000/")
 # print("TC-FUNC-010 PASSED - Login with empty password rejected")
 # driver.execute_script("window.localStorage.clear();")
 
-# Login with empty two fields
-driver.get("http://localhost:3000/")
-sign_in_btn = driver.find_element(By.XPATH, '//a[contains(text(),"Sign In")]')
-sign_in_btn.click()
-driver.find_element(By.ID, "username").send_keys("")
-driver.find_element(By.ID, "password").send_keys("")
-driver.find_element(By.ID, "login-btn").click()
-assert "/login" in driver.current_url
-print("TC-FUNC-000 PASSED - Login with empty username and password rejected")
+# # Login with empty two fields
+# driver.get("http://localhost:3000/")
+# sign_in_btn = driver.find_element(By.XPATH, '//a[contains(text(),"Sign In")]')
+# sign_in_btn.click()
+# driver.find_element(By.ID, "username").send_keys("")
+# driver.find_element(By.ID, "password").send_keys("")
+# driver.find_element(By.ID, "login-btn").click()
+# assert "/login" in driver.current_url
+# print("TC-FUNC-000 PASSED - Login with empty username and password rejected")
 ############################################################################ meals ##########################################################################
 
 # # Get all meals
@@ -124,6 +155,26 @@ print("TC-FUNC-000 PASSED - Login with empty username and password rejected")
 # print("TC-FUNC-012 PASSED - Meal not found")
 
 ############################################################################ orders ##########################################################################
+# # My Orders Link Navigates to Orders
+# driver.get("http://localhost:3000/")
+# sign_in_btn = driver.find_element(By.XPATH, '//a[contains(text(),"Sign In")]')
+# sign_in_btn.click()
+# driver.find_element(By.ID, "username").send_keys("sami2")
+# driver.find_element(By.ID, "password").send_keys("123456")
+# driver.find_element(By.ID, "login-btn").click()
+# time.sleep(3)
+# driver.find_element(By.ID, 'my-orders-link').click()
+# time.sleep(2)
+# assert "MyOrders" in driver.current_url
+# print("TC-FUNC-013 PASSED - My Orders link navigates to orders page")
+# driver.execute_script("window.localStorage.clear();")
+
+# # My Orders Redirects Unauthenticated User
+# driver.get("http://localhost:3000/")
+# driver.find_element(By.ID, 'my-orders-link').click()
+# time.sleep(3)
+# assert "/login" in driver.current_url
+# print("TC-FUNC-014 PASSED - My Orders redirects unauthenticated user to login page")
 
 
 input("Press Enter to close...")  

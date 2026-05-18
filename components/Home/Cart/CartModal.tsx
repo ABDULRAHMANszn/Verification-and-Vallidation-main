@@ -132,7 +132,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
         <hr className="my-4" />
 
         <p className="font-bold text-lg text-black dark:text-white">
-          Total: <span className="text-green-600">₺{total}</span>
+          Total: <span id="cart-total-price" className="text-green-600">₺{total}</span>
         </p>
 
         <div className="mt-4 flex items-center gap-2 text-green-600 font-medium">

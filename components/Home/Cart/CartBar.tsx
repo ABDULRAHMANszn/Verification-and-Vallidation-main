@@ -10,7 +10,7 @@ const CartBar = ({ total, onConfirm }: Props) => {
   const showButton = total>0;
   return (
     <div className="fixed bottom-0 left-0 w-full dark:bg-gray-900  bg-gray-200 shadow-lg border-t p-4 flex space-x-4 place-content-center items-center z-50">
-      <p className="font-bold text-lg">Total: ₺{total}</p>
+      <p id="cartbar-total-price" className="font-bold text-lg">Total: ₺{total}</p>
 
       <button
         id="cart-btn"
