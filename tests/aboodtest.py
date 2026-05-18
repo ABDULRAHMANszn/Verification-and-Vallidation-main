@@ -154,6 +154,11 @@ driver.get("http://localhost:3000/")
 # assert "Not Found" in driver.page_source
 # print("TC-FUNC-012 PASSED - Meal not found")
 
+# Cannot Decrement Below Zero	
+driver.get("http://localhost:3000/")
+driver.find_element(By.ID, 'remove-from-cart-2').click()
+
+
 ############################################################################ orders ##########################################################################
 # # My Orders Link Navigates to Orders
 # driver.get("http://localhost:3000/")

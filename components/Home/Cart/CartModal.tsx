@@ -109,7 +109,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
                     >
                       <FaMinus size={10} />
                     </button>
-                    <span className="text-black dark:text-white font-bold">{item.quantity}</span>
+                    <span id={`quantity-${item.meal_id}`} className="text-black dark:text-white font-bold">{item.quantity}</span>
                     <button
                       id={`increase-${item.meal_id}`}
                       onClick={() =>
