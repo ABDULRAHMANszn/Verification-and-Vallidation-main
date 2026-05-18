@@ -94,7 +94,7 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
           )}
 
           {cart.map((item) => (
-            <div key={item.meal_id} className="flex items-center justify-between gap-3">
+            <div key={item.meal_id} id={`cart-item-${item.meal_id}`} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <img src={item.image} alt={item.title} className="w-12 h-12 rounded-lg object-cover" />
                 <div>

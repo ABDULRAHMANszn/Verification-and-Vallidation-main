@@ -1,12 +1,17 @@
 'use client'
-import React, { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import SignInForm from "./SignInForm";
 import SignUpForm from "./SignUpForm";
 
 const LoginPage = () => {
   const searchParams = useSearchParams();
-  const [isLogin, setIsLogin] = useState(searchParams.get("mode") !== "signup");
+  const router = useRouter();
+  const isLogin = searchParams.get("mode") !== "signup";
+
+  const toggle = () => {
+    router.push(isLogin ? "/login?mode=signup" : "/login");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center dark:bg-gray-900  dark:text-gray-300 bg-gray-100">
@@ -25,7 +30,7 @@ const LoginPage = () => {
           {isLogin ? "Don't have an account?" : "Already have an account?"}
           <button
             id="toggle-login-btn"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={toggle}
             className="ml-2 text-blue-950 font-semibold hover:underline dark:text-gray-300"
           >
             {isLogin ? "Sign Up" : "Sign In"}

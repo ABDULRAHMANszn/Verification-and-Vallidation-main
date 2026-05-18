@@ -47,7 +47,7 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
   const totalPrice = parseFloat((count * price).toFixed(2));
 
   return (
-    <div>
+    <div id={`meal-card-${meal_id}`}>
       <Image
         src={image}
         width={400}
