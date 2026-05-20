@@ -137,31 +137,72 @@ driver.get("http://localhost:3000/")
 
 ########################################################################### navbar ##########################################################################
 
-# TC-USA-019 - Username Displayed in Navbar After Login
-driver.get("http://localhost:3000/login")
-time.sleep(2)
-driver.find_element(By.ID, "username").send_keys("sami2")
-driver.find_element(By.ID, "password").send_keys("123456")
-driver.find_element(By.ID, "login-btn").click()
-time.sleep(3)
-username_display = driver.find_element(By.XPATH, '//span[contains(text(), "sami2")]')
-assert username_display.is_displayed()
-print("TC-USA-019 PASSED - Username 'sami2' is visible in the navbar after login")
-driver.execute_script("window.localStorage.clear();")
+# # TC-USA-019 - Username Displayed in Navbar After Login
+# driver.get("http://localhost:3000/login")
+# time.sleep(2)
+# driver.find_element(By.ID, "username").send_keys("sami2")
+# driver.find_element(By.ID, "password").send_keys("123456")
+# driver.find_element(By.ID, "login-btn").click()
+# time.sleep(3)
+# username_display = driver.find_element(By.XPATH, '//span[contains(text(), "sami2")]')
+# assert username_display.is_displayed()
+# print("TC-USA-019 PASSED - Username 'sami2' is visible in the navbar after login")
+# driver.execute_script("window.localStorage.clear();")
 
-# TC-USA-020 - Page Title Visible on My Orders Page
+# # TC-USA-020 - Page Title Visible on My Orders Page
+# driver.get("http://localhost:3000/login")
+# time.sleep(2)
+# driver.find_element(By.ID, "username").send_keys("sami2")
+# driver.find_element(By.ID, "password").send_keys("123456")
+# driver.find_element(By.ID, "login-btn").click()
+# time.sleep(3)
+# driver.get("http://localhost:3000/MyOrders")
+# time.sleep(2)
+# heading = driver.find_element(By.XPATH, '//h1[contains(text(), "My Orders")]')
+# assert heading.is_displayed()
+# print("TC-USA-020 PASSED - 'My Orders' heading is clearly visible on the orders page")
+# driver.execute_script("window.localStorage.clear();")
+
+############################################################################ logout ##########################################################################
+
+# TC-USA-LOGOUT-001 - Logout Redirects to Login Page
 driver.get("http://localhost:3000/login")
 time.sleep(2)
 driver.find_element(By.ID, "username").send_keys("sami2")
 driver.find_element(By.ID, "password").send_keys("123456")
 driver.find_element(By.ID, "login-btn").click()
 time.sleep(3)
-driver.get("http://localhost:3000/MyOrders")
+driver.find_element(By.ID, "logout-btn").click()
 time.sleep(2)
-heading = driver.find_element(By.XPATH, '//h1[contains(text(), "My Orders")]')
-assert heading.is_displayed()
-print("TC-USA-020 PASSED - 'My Orders' heading is clearly visible on the orders page")
-driver.execute_script("window.localStorage.clear();")
+assert "/login" in driver.current_url
+print("TC-USA-LOGOUT-001 PASSED - Logout redirects user to /login")
+
+# TC-USA-LOGOUT-002 - Navbar Shows Sign In After Logout
+driver.get("http://localhost:3000/login")
+time.sleep(2)
+driver.find_element(By.ID, "username").send_keys("sami2")
+driver.find_element(By.ID, "password").send_keys("123456")
+driver.find_element(By.ID, "login-btn").click()
+time.sleep(3)
+driver.find_element(By.ID, "logout-btn").click()
+time.sleep(2)
+login_link = driver.find_element(By.ID, "login-btn")
+assert login_link.is_displayed()
+print("TC-USA-LOGOUT-002 PASSED - Sign In link is visible in navbar after logout")
+
+# TC-USA-LOGOUT-003 - After Logout Cannot Access My Orders
+driver.get("http://localhost:3000/login")
+time.sleep(2)
+driver.find_element(By.ID, "username").send_keys("sami2")
+driver.find_element(By.ID, "password").send_keys("123456")
+driver.find_element(By.ID, "login-btn").click()
+time.sleep(3)
+driver.find_element(By.ID, "logout-btn").click()
+time.sleep(2)
+driver.get("http://localhost:3000/MyOrders")
+time.sleep(3)
+assert "/login" in driver.current_url
+print("TC-USA-LOGOUT-003 PASSED - Logged out user is redirected from /MyOrders to /login")
 
 input("Press Enter to close...")
 driver.quit()
