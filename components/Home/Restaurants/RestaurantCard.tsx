@@ -60,7 +60,7 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
         <h1 className="mt-4 font-bold text-base sm:text-lg">
           {title}
         </h1>
-        <p className="font-bold mt-4 text-orange-600 text-base sm:text-lg">
+        <p id={`meal-price-${meal_id}`} className="font-bold mt-4 text-orange-600 text-base sm:text-lg">
           ₺{price}
         </p>
       </div>
@@ -95,7 +95,7 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
       </div>
 
       {count > 0 && (
-        <p className="mt-2 font-semibold text-green-700">
+        <p id={`meal-subtotal-${meal_id}`} className="mt-2 font-semibold text-green-700">
           Subtotal: ₺{totalPrice}
         </p>
       )}

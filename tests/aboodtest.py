@@ -154,10 +154,53 @@ driver.get("http://localhost:3000/")
 # assert "Not Found" in driver.page_source
 # print("TC-FUNC-012 PASSED - Meal not found")
 
-# Cannot Decrement Below Zero	
-driver.get("http://localhost:3000/")
-driver.find_element(By.ID, 'remove-from-cart-2').click()
+# # Cannot Decrement Below Zero	
+# driver.get("http://localhost:3000/")
+# revitem =driver.find_element(By.ID, 'remove-from-cart-2')
+# driver.execute_script("arguments[0].click();", revitem)
 
+# que = driver.find_element(By.ID, 'quantityOfMeal')
+# print("TC-FUNC-011 PASSED - Cannot decrement meal quantity below zero")
+
+# # CartBar Total is Correct	
+# driver.get("http://localhost:3000/")
+# addbtu1 = driver.find_element(By.ID, 'add-to-cart-1')
+# driver.execute_script("arguments[0].click();", addbtu1)
+# price1 = driver.find_element(By.ID, "meal-price-1").text
+# addbtu2 = driver.find_element(By.ID, 'add-to-cart-2')
+# driver.execute_script("arguments[0].click();", addbtu2)
+# price2 = driver.find_element(By.ID, "meal-price-2").text
+# total_price = driver.find_element(By.ID, 'cartbar-total-price').text
+# price1_value = float(price1.replace('₺', ''))
+# price2_value = float(price2.replace('₺', ''))
+# total_price_value = float(total_price.replace('Total: ₺', ''))
+# assert total_price_value == price1_value + price2_value
+# print("TC-FUNC-012 PASSED - Cart total is correct")
+
+
+# # Open Cart Modal via CartBar	
+# driver.get("http://localhost:3000/")
+# cart_btn = driver.find_element(By.ID, 'add-to-cart-3')
+# driver.execute_script("arguments[0].click();", cart_btn)
+# cart_modal = driver.find_element(By.ID, 'cart-btn')
+# driver.execute_script("arguments[0].click();", cart_modal)
+# meal_cards = driver.find_elements(By.XPATH, '//*[contains(@id, "cart-item")]')  
+# assert len(meal_cards) == 1
+# print("TC-FUNC-013 PASSED - Cart modal opens when clicking cart button")
+
+# Close Cart Modal	
+driver.get("http://localhost:3000/")
+cart_btn = driver.find_element(By.ID, 'add-to-cart-3')
+driver.execute_script("arguments[0].click();", cart_btn)
+cart_modal = driver.find_element(By.ID, 'cart-btn')
+driver.execute_script("arguments[0].click();", cart_modal)
+close_btn = driver.find_element(By.ID, 'close-cart-btn')
+driver.execute_script("arguments[0].click();", close_btn)
+time.sleep(2)
+cart_modal = driver.find_element(By.ID, 'cart-modal')
+time.sleep(3)
+assert not cart_modal.is_displayed()
+print("TC-FUNC-014 PASSED - Cart modal closes when clicking close button")
 
 ############################################################################ orders ##########################################################################
 # # My Orders Link Navigates to Orders

@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from "react";
 import { FaCheckCircle, FaPlus, FaMinus } from "react-icons/fa";
-import { CgClose } from "react-icons/cg";
 import { createOrder, getUser } from "@/constant/api";
 import { useRouter } from "next/navigation";
 
@@ -72,11 +71,13 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
     <div id="cart-modal" className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
       <div className="bg-white dark:bg-gray-900 rounded-xl p-6 w-[90%] max-w-md relative">
 
-        <CgClose
+        <button
           id="close-cart-btn"
           onClick={onClose}
-          className="absolute top-4 right-4 w-6 h-6 cursor-pointer text-black dark:text-white"
-        />
+          className="absolute top-4 right-4 text-gray-500 hover:text-black dark:hover:text-white transition-colors text-xl font-bold leading-none"
+        >
+          ✕
+        </button>
 
         <h2 className="text-xl font-bold mb-4 text-black dark:text-white">
           Your Order
