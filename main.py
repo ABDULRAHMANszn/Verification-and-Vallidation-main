@@ -5,18 +5,27 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.requests import Request
+from starlette.responses import Response
 from pydantic import BaseModel, Field, field_validator
 from fastapi import FastAPI, HTTPException, Depends, Path, Header
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 from jose import jwt, JWTError
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from connection import (
-    engine, Base, seed_meals, update_meal_ingredients,
+    engine, Base, seed_meals, update_meal_ingredients, ensure_unavailable_meal,
     SessionLocal, Meal, User, Order, OrderItem,
 )
 
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,6 +38,7 @@ app.add_middleware(
 Base.metadata.create_all(engine)
 seed_meals()
 update_meal_ingredients()
+ensure_unavailable_meal()
 
 
 # ─────────────────────────────────────────────
@@ -107,7 +117,8 @@ async def get_meal(db: db_dependency, id: int = Path(gt=0)):
 #  AUTH
 # ─────────────────────────────────────────────
 
-PHONE_REGEX = re.compile(r"^\+?[0-9]{7,15}$")
+PHONE_REGEX    = re.compile(r"^\+?[0-9]{7,15}$")
+USERNAME_REGEX = re.compile(r"^[a-zA-Z0-9_]+$")
 
 
 class RegisterRequest(BaseModel):
@@ -116,6 +127,13 @@ class RegisterRequest(BaseModel):
     phone: str
     address: str
     email: Optional[str] = None
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, v: str) -> str:
+        if not USERNAME_REGEX.match(v):
+            raise ValueError("Username may only contain letters, numbers, and underscores")
+        return v
 
     @field_validator("phone")
     @classmethod
@@ -161,7 +179,8 @@ async def register(data: RegisterRequest, db: db_dependency):
 
 
 @app.post("/auth/login")
-async def login(data: LoginRequest, db: db_dependency):
+@limiter.limit("5/minute")
+async def login(request: Request, data: LoginRequest, db: db_dependency):
     user = db.query(User).filter(User.username == data.username).first()
 
     if not user or not verify_password(data.password, user.password):

@@ -17,6 +17,7 @@ type Props = {
   title: string;
   price: number;
   category: string;
+  is_available: number;
   updateCart: (
     meal_id: number,
     title: string,
@@ -27,15 +28,17 @@ type Props = {
   cart: CartItem[];
 };
 
-const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, cart }: Props) => {
+const RestaurantCard = ({ meal_id, image, title, price, category, is_available, updateCart, cart }: Props) => {
+
+  const available = is_available === 1;
 
   // ✅ Find this meal in the cart by meal_id
   const itemInCart = cart.find(item => item.meal_id === meal_id);
   const count = itemInCart ? itemInCart.quantity : 0;
 
   const handleAdd = () => {
-    const newQuantity = count + 1;
-    updateCart(meal_id, title, price, newQuantity, image);
+    if (count >= 10) return;
+    updateCart(meal_id, title, price, count + 1, image);
   };
 
   const handleRemove = () => {
@@ -69,6 +72,11 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
 
         <div className="flex space-x-2">
           <p className="bg-blue-950 px-3 py-1.5 rounded-full text-white">{category}</p>
+          {!available && (
+            <p className="bg-red-100 text-red-600 px-3 py-1.5 rounded-full text-sm font-semibold">
+              Unavailable
+            </p>
+          )}
         </div>
 
         {/* CONTROLS */}
@@ -77,7 +85,8 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
           <button
             id={`remove-from-cart-${meal_id}`}
             onClick={handleRemove}
-            className="bg-red-600 p-2 rounded-full text-white"
+            disabled={!available}
+            className="bg-red-600 p-2 rounded-full text-white disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <FaMinus />
           </button>
@@ -87,7 +96,8 @@ const RestaurantCard = ({ meal_id, image, title, price, category, updateCart, ca
           <button
             id={`add-to-cart-${meal_id}`}
             onClick={handleAdd}
-            className="bg-green-600 p-2 rounded-full text-white"
+            disabled={!available}
+            className="bg-green-600 p-2 rounded-full text-white disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <FaPlus />
           </button>

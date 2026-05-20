@@ -20,12 +20,31 @@ type CartItem = {
   image: string;
 };
 
+const CART_KEY = "cart";
+
 const Home = () => {
+  const [mounted, setMounted] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
   const [mealsError, setMealsError] = useState("");
+
+  // ── Load cart from localStorage after mount (client-only) ──
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(CART_KEY);
+      if (saved) setCart(JSON.parse(saved));
+    } catch {
+      // corrupted storage — start fresh
+    }
+    setMounted(true);
+  }, []);
+
+  // ── Persist cart to localStorage on every change ──
+  useEffect(() => {
+    if (mounted) localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }, [cart, mounted]);
 
   // ── Fetch meals from FastAPI on mount ──
   useEffect(() => {
@@ -106,11 +125,11 @@ const Home = () => {
       <About />
       <Feature />
 
-      {/* ── Cart Bar ── */}
-      <CartBar total={total} onConfirm={() => setShowModal(true)} />
+      {/* ── Cart Bar — client-only to avoid hydration mismatch ── */}
+      {mounted && <CartBar total={total} onConfirm={() => setShowModal(true)} />}
 
       {/* ── Cart Modal ── */}
-      {showModal && (
+      {mounted && showModal && (
         <CartModal
           cart={cart}
           total={total}

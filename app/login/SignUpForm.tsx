@@ -16,6 +16,14 @@ const SignUpForm = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      setError("Username may only contain letters, numbers, and underscores");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
     setLoading(true);
     try {
       const user = await registerUser(username, password, phone, address, email || undefined);
@@ -38,9 +46,9 @@ const SignUpForm = () => {
       <input id="username" type="text" placeholder="Username"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
         value={username} onChange={(e) => setUsername(e.target.value)} required />
-      <input id="password" type="password" placeholder="Password"
+      <input id="password" type="password" placeholder="Password (min 6 characters)"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
-        value={password} onChange={(e) => setPassword(e.target.value)} required />
+        value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
       <input id="email" type="email" placeholder="Email (optional)"
         className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-950"
         value={email} onChange={(e) => setEmail(e.target.value)} />

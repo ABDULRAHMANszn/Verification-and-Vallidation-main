@@ -29,6 +29,7 @@ type Props = {
 const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [orderId, setOrderId] = useState<number | null>(null);
   const router = useRouter();
 
   const handleConfirm = async () => {
@@ -54,17 +55,40 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
         quantity: item.quantity,
       }));
 
-      const result = await createOrder(user.user_id, items);
-      console.log("Order created:", result);
-
+      const minDelay = new Promise<void>(resolve => setTimeout(resolve, 3000));
+      const [result] = await Promise.all([createOrder(user.user_id, items), minDelay]);
       clearCart();
-      onClose();
+      setOrderId(result.order_id);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to place order");
     } finally {
       setLoading(false);
     }
   };
+
+  // ── Success screen shown after order is placed ──
+  if (orderId !== null) {
+    return (
+      <div id="cart-modal" className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-8 w-[90%] max-w-md flex flex-col items-center gap-4 text-center">
+          <FaCheckCircle className="text-green-500 w-14 h-14" />
+          <h2 id="order-success-msg" className="text-xl font-bold text-black dark:text-white">
+            Order placed successfully!
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Order <span className="font-semibold text-blue-950 dark:text-white">#{orderId}</span> has been confirmed. Payment at the door.
+          </p>
+          <button
+            id="close-cart-btn"
+            onClick={onClose}
+            className="mt-2 bg-blue-950 hover:bg-black text-white font-semibold px-8 py-2.5 rounded-lg transition"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div id="cart-modal" className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">

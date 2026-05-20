@@ -39,6 +39,7 @@ const Restaurants = ({ id, updateCart, cart, meals }: Props) => {
             title={meal.meal_name}
             price={Number(meal.price)}
             category={meal.category}
+            is_available={meal.is_available}
             updateCart={updateCart}
             cart={cart}
           />
