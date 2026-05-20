@@ -57,7 +57,6 @@ const CartModal = ({ cart, total, onClose, clearCart, updateCart }: Props) => {
       const result = await createOrder(user.user_id, items);
       console.log("Order created:", result);
 
-      alert(`✅ Order #${result.order_id} placed successfully!`);
       clearCart();
       onClose();
     } catch (err: unknown) {
