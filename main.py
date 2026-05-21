@@ -119,7 +119,7 @@ async def get_meal(db: db_dependency, id: int = Path(gt=0)):
 
 PHONE_REGEX    = re.compile(r"^\+?[0-9]{7,15}$")
 USERNAME_REGEX = re.compile(r"^[a-zA-Z0-9_]+$")
-
+ADDRESS_REGEX = re.compile(r"^[a-zA-Z0-9\s,.\-/#()]+$")
 
 class RegisterRequest(BaseModel):
     username: str = Field(min_length=4, max_length=100)
@@ -141,6 +141,21 @@ class RegisterRequest(BaseModel):
         if not PHONE_REGEX.match(v.strip()):
             raise ValueError("Phone must be 7–15 digits, optionally prefixed with '+'")
         return v.strip()
+
+    @field_validator("address")
+    @classmethod
+    def validate_address(cls, v: str) -> str:
+        value = v.strip()
+
+        # Reject HTML/script attempts
+        if "<" in value or ">" in value:
+            raise ValueError("Address contains invalid characters")
+
+        # Allow only safe address characters
+        if not ADDRESS_REGEX.match(value):
+            raise ValueError("Address contains invalid characters")
+
+        return value
 
 
 class LoginRequest(BaseModel):
